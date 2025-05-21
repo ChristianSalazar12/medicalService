@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const errorHandler = require("./middleware/errorHandler");
-const logger = require("./middleware/logger");
+const errorHandler = require("./middlewares/errorHandler");
+const logger = require("./middlewares/logger");
 const route = require("./router");
 
 app.use(express.json());
