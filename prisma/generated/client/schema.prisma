@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  PENDIENTE
+  COMPLETADO
+  CANCELADO
+}
+
+enum TypeServicio {
+  MEDICO
+  TRAUMA
+  PSIQUIATRICO
+  OTRO
+}
+
+enum Typecomplicacion {
+  RESPIRATORIA
+  CARDIOVASCULAR
+  TRAUMATISMO
+  NEUROLOGICO
+  TRAUMATICO
+  INFECCIOSO
+  OTRO
+  NO_APLICA
+}
+
+enum TypeContext {
+  ESCOLAR
+  LABORAL
+  DEPORTIVO
+  PUBLICO
+  OTRO
+}
+
+model Servicio {
+  id             Int      @id @default(autoincrement())
+  date           DateTime
+  status         Status
+  time_arrived   DateTime
+  time_finish    DateTime
+  code_start     String
+  code_end       String
+  place_accident String
+  nro_informe    String
+  id_paciente    Int // Referencia a Pacientes
+  id_turno       Int // Referencia a Turnos
+
+  complicaciones Complicacion[] @relation("ServicioToComplicacion")
+  descripcion    Descripcion?   @relation("ServicioToDescripcion")
+}
+
+model Complicacion {
+  id          Int              @id @default(autoincrement())
+  type        Typecomplicacion
+  description String
+  id_servicio Int
+
+  servicio Servicio @relation("ServicioToComplicacion", fields: [id_servicio], references: [id])
+}
+
+model Descripcion {
+  id              Int    @id @default(autoincrement())
+  hallazgos       String
+  motivo_atencion String
+  antecedentes    String
+  examen_fisico   String
+  id_servicio     Int    @unique
+
+  servicio Servicio @relation("ServicioToDescripcion", fields: [id_servicio], references: [id])
+}
